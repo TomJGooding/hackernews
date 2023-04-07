@@ -1,0 +1,11 @@
+Screen {
+  align: center middle;
+}
+
+Header {
+  background: #ff6600;
+}
+
+DataTable {
+  width: 95%;
+}
