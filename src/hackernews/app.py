@@ -52,6 +52,8 @@ class HackerNewsTUI(App):
             else:
                 title = f"[link={url}]{title}[/]"
                 site = urlparse(url).netloc
+                if site.startswith("www."):
+                    site = site[4:]
 
             table.add_row(*(rank, item.score, title, site, comments))
 
