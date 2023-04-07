@@ -4,6 +4,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import DataTable, Header
 
 from hackernews.api import HackerNewsApi
+from hackernews.models import Item
 
 COLUMN_HEADERS = ("Rank", "Score", "Title", "Site")
 
@@ -23,17 +24,17 @@ class HackerNewsTUI(App):
         api = HackerNewsApi()
         top_30_stories = api.get_top_stories()[:30]
         for rank, id in enumerate(top_30_stories, start=1):
-            item = api.get_item(id)
-            score = item.get("score")
-            title = item.get("title")
-            url = item.get("url")
-            site = ""
+            item: Item = api.get_item(id)
+
+            title: str = item.title
+            url: str | None = item.url
+            site: str = ""
 
             if url:
                 title = f"[link={url}]{title}[/]"
                 site = urlparse(url).netloc
 
-            table.add_row(*(rank, score, title, site))
+            table.add_row(*(rank, item.score, title, site))
 
 
 if __name__ == "__main__":
