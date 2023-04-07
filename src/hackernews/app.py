@@ -43,9 +43,12 @@ class HackerNewsTUI(App):
         for rank, item in enumerate(items, start=1):
             title: str = item.title
             url: str | None = item.url
-            site: str = ""
 
-            if url:
+            if not url:
+                url = f"https://news.ycombinator.com/item?id={item.id}"
+                title = f"[link={url}]{title}[/]"
+                site: str = ""
+            else:
                 title = f"[link={url}]{title}[/]"
                 site = urlparse(url).netloc
 
