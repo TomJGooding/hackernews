@@ -17,15 +17,15 @@ class HackerNewsTUI(App):
         yield Header()
         yield DataTable(show_cursor=False)
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         table = self.query_one(DataTable)
         table.add_columns(*COLUMN_HEADERS)
 
         api = HackerNewsApi()
-        top_30_stories = api.get_top_stories()[:30]
-        for rank, id in enumerate(top_30_stories, start=1):
-            item: Item = api.get_item(id)
-
+        top_stories = await api.get_top_stories_ids()
+        top_30_stories = top_stories[:30]
+        items: list[Item] = await api.get_multiple_items(top_30_stories)
+        for rank, item in enumerate(items, start=1):
             title: str = item.title
             url: str | None = item.url
             site: str = ""
