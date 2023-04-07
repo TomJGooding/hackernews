@@ -15,6 +15,6 @@ class HackerNewsApi:
     def _request(self, resource: str) -> dict:
         # TODO: handle this properly!
         data = dict()
-        resp = requests.get(self.BASE_URL, resource)
+        resp = requests.get(f"{self.BASE_URL}{resource}")
         data = resp.json()
         return data
