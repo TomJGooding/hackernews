@@ -1,20 +1,35 @@
 from urllib.parse import urlparse
 
+from rich.console import RenderableType
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Header
+from textual.widgets import DataTable, Static
 
 from hackernews.api import HackerNewsApi
 from hackernews.models import Item
 
+HEADER = "[b][bright_white][Y][/bright_white][grey0]Hacker News[/grey0][/b]"
 COLUMN_HEADERS = ("Rank", "Score", "Title", "Site")
 
 
+class CustomHeader(Static):
+    DEFAULT_CSS = """
+        CustomHeader {
+            dock: top;
+            width: 100%;
+            height: auto;
+            content-align: center middle;
+        }
+    """
+
+    def __init__(self, renderable: RenderableType = "") -> None:
+        super().__init__(renderable)
+
+
 class HackerNewsTUI(App):
-    TITLE = "Hacker News"
     CSS_PATH = "app.css"
 
     def compose(self) -> ComposeResult:
-        yield Header()
+        yield CustomHeader(HEADER)
         yield DataTable(show_cursor=False)
 
     async def on_mount(self) -> None:
