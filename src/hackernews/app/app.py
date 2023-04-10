@@ -21,6 +21,6 @@ class HackerNewsTUI(App):
         table.focus()
 
 
-if __name__ == "__main__":
+def run() -> None:
     app = HackerNewsTUI()
     app.run()
