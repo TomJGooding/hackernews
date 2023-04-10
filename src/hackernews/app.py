@@ -1,3 +1,4 @@
+import webbrowser
 from typing import Any
 from urllib.parse import urlparse
 
@@ -9,7 +10,6 @@ from hackernews.api import HackerNewsApi
 from hackernews.models import Item
 
 HEADER = "[b][bright_white][Y][/bright_white][grey0]Hacker News[/grey0][/b]"
-COLUMN_HEADERS = ("Rank", "Score", "Title", "Site")
 
 
 class CustomHeader(Static):
@@ -36,24 +36,28 @@ class ViLikeDataTable(DataTable):
         super().__init__(*args, **kwargs)
 
 
-class HackerNewsTUI(App):
-    CSS_PATH = "app.css"
+class HackerNewsTable(ViLikeDataTable):
+    BINDINGS = [("enter", "select_cursor", "Open URL")]
 
-    def compose(self) -> ComposeResult:
-        yield CustomHeader(HEADER)
-        yield ViLikeDataTable()
-        yield Footer()
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._items: list[Item] = []
 
-    async def on_mount(self) -> None:
-        table = self.query_one(ViLikeDataTable)
-        table.cursor_type = "row"
-        table.add_columns(*COLUMN_HEADERS)
-
+    async def _get_items(self) -> None:
         api = HackerNewsApi()
         top_stories = await api.get_top_stories_ids()
         top_30_stories = top_stories[:30]
         items: list[Item] = await api.get_multiple_items(top_30_stories)
-        for rank, item in enumerate(items, start=1):
+
+        self._items = items
+
+    async def on_mount(self) -> None:
+        self.cursor_type = "row"
+        self.add_columns(*("Rank", "Score", "Title", "Site"))
+
+        await self._get_items()
+
+        for rank, item in enumerate(self._items, start=1):
             title: str = item.title
             url: str | None = item.url
             comments_url = f"https://news.ycombinator.com/item?id={item.id}"
@@ -67,8 +71,28 @@ class HackerNewsTUI(App):
                 if site.startswith("www."):
                     site = site[4:]
 
-            table.add_row(*(rank, item.score, title, site))
+            self.add_row(*(rank, item.score, title, site))
 
+    def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
+        selected_item: Item = self._items[event.cursor_row]
+        if not selected_item.url:
+            url = f"https://news.ycombinator.com/item?id={selected_item.id}"
+        else:
+            url = selected_item.url
+
+        webbrowser.open(url)
+
+
+class HackerNewsTUI(App):
+    CSS_PATH = "app.css"
+
+    def compose(self) -> ComposeResult:
+        yield CustomHeader(HEADER)
+        yield HackerNewsTable()
+        yield Footer()
+
+    async def on_mount(self) -> None:
+        table = self.query_one(HackerNewsTable)
         table.focus()
 
 
