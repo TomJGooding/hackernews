@@ -8,7 +8,7 @@ from hackernews.api import HackerNewsApi
 from hackernews.models import Item
 
 HEADER = "[b][bright_white][Y][/bright_white][grey0]Hacker News[/grey0][/b]"
-COLUMN_HEADERS = ("Rank", "Score", "Title", "Site", "Comments")
+COLUMN_HEADERS = ("Rank", "Score", "Title", "Site")
 
 
 class CustomHeader(Static):
@@ -44,7 +44,6 @@ class HackerNewsTUI(App):
             title: str = item.title
             url: str | None = item.url
             comments_url = f"https://news.ycombinator.com/item?id={item.id}"
-            comments = f"[link={comments_url}]Link[/]"
 
             if not url:
                 title = f"[link={comments_url}]{title}[/]"
@@ -55,7 +54,7 @@ class HackerNewsTUI(App):
                 if site.startswith("www."):
                     site = site[4:]
 
-            table.add_row(*(rank, item.score, title, site, comments))
+            table.add_row(*(rank, item.score, title, site))
 
 
 if __name__ == "__main__":
