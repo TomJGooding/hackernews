@@ -2,38 +2,11 @@ import webbrowser
 from typing import Any
 from urllib.parse import urlparse
 
-from rich.console import RenderableType
-from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Footer, Static
+from textual.widgets import DataTable
 
 from hackernews.api import HackerNewsApi
+from hackernews.app.widgets.vi_like_datatable import ViLikeDataTable
 from hackernews.models import Item
-
-HEADER = "[b][bright_white][Y][/bright_white][grey0]Hacker News[/grey0][/b]"
-
-
-class CustomHeader(Static):
-    DEFAULT_CSS = """
-        CustomHeader {
-            dock: top;
-            width: 100%;
-            height: auto;
-            content-align: center middle;
-        }
-    """
-
-    def __init__(self, renderable: RenderableType = "") -> None:
-        super().__init__(renderable)
-
-
-class ViLikeDataTable(DataTable):
-    BINDINGS = [
-        ("j", "cursor_down", "Down"),
-        ("k", "cursor_up", "Up"),
-    ]
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
 
 
 class HackerNewsTable(ViLikeDataTable):
@@ -81,21 +54,3 @@ class HackerNewsTable(ViLikeDataTable):
             url = selected_item.url
 
         webbrowser.open(url)
-
-
-class HackerNewsTUI(App):
-    CSS_PATH = "app.css"
-
-    def compose(self) -> ComposeResult:
-        yield CustomHeader(HEADER)
-        yield HackerNewsTable()
-        yield Footer()
-
-    async def on_mount(self) -> None:
-        table = self.query_one(HackerNewsTable)
-        table.focus()
-
-
-if __name__ == "__main__":
-    app = HackerNewsTUI()
-    app.run()
