@@ -2,6 +2,8 @@
 
 A simple TUI to browse Hacker News
 
+![screenshot](assets/screenshot.svg)
+
 ## Installation
 
 Install `hackernews` using [pipx](https://pypa.github.io/pipx/):
