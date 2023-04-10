@@ -30,10 +30,11 @@ class HackerNewsTUI(App):
 
     def compose(self) -> ComposeResult:
         yield CustomHeader(HEADER)
-        yield DataTable(show_cursor=False)
+        yield DataTable()
 
     async def on_mount(self) -> None:
         table = self.query_one(DataTable)
+        table.cursor_type = "row"
         table.add_columns(*COLUMN_HEADERS)
 
         api = HackerNewsApi()
