@@ -1,8 +1,9 @@
+from typing import Any
 from urllib.parse import urlparse
 
 from rich.console import RenderableType
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Static
+from textual.widgets import DataTable, Footer, Static
 
 from hackernews.api import HackerNewsApi
 from hackernews.models import Item
@@ -25,15 +26,26 @@ class CustomHeader(Static):
         super().__init__(renderable)
 
 
+class ViLikeDataTable(DataTable):
+    BINDINGS = [
+        ("j", "cursor_down", "Down"),
+        ("k", "cursor_up", "Up"),
+    ]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+
 class HackerNewsTUI(App):
     CSS_PATH = "app.css"
 
     def compose(self) -> ComposeResult:
         yield CustomHeader(HEADER)
-        yield DataTable()
+        yield ViLikeDataTable()
+        yield Footer()
 
     async def on_mount(self) -> None:
-        table = self.query_one(DataTable)
+        table = self.query_one(ViLikeDataTable)
         table.cursor_type = "row"
         table.add_columns(*COLUMN_HEADERS)
 
@@ -56,6 +68,8 @@ class HackerNewsTUI(App):
                     site = site[4:]
 
             table.add_row(*(rank, item.score, title, site))
+
+        table.focus()
 
 
 if __name__ == "__main__":
