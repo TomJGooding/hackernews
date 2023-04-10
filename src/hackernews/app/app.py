@@ -9,6 +9,7 @@ HEADER = "[b][bright_white][Y][/bright_white][grey0]Hacker News[/grey0][/b]"
 
 class HackerNewsTUI(App):
     CSS_PATH = "style.css"
+    BINDINGS = [("q", "quit", "Quit")]
 
     def compose(self) -> ComposeResult:
         yield CustomHeader(HEADER)
